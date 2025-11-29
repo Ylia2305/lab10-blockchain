@@ -3,8 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>MetaMask Connection</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.2.0/ethers.umd.min.js" 
-            type="application/javascript"></script>
+    <!-- Используем CDN от jsdelivr вместо cloudflare -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <!-- Добавляем meta тег для CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://sepolia.infura.io https://*.infura.io; connect-src 'self' https://sepolia.infura.io https://*.infura.io https://*.alchemyapi.io wss:;">
 </head>
 <body>
     <h1>Взаимодействие с кошельком</h1>
