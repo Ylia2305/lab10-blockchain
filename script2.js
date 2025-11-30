@@ -1,5 +1,5 @@
 // ЗАМЕНИТЕ ЭТИ ДАННЫЕ ПОСЛЕ РАЗВЕРТЫВАНИЯ КОНТРАКТА
-const contractAddress = 'ВАШ_АДРЕС_КОНТРАКТА';
+const contractAddress = '0x9dc4449BB40f6035a71F503E8779DAb6430d1e88';
 const contractAbi = [
     {
         "inputs": [
