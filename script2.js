@@ -1,5 +1,5 @@
 // Адрес вашего контракта
-const contractAddress = '0x9dc4449BB40f6035a71F503E8779DAb6430d1e88';
+const contractAddress = '0xd9145CCE52D386f254917e481eB44e9943F39138';
 
 // ABI контракта
 const contractAbi = [
