@@ -1,7 +1,6 @@
-// Адрес вашего контракта
-const contractAddress = '0xd9145CCE52D386f254917e481eB44e9943F39138';
+// ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ АДРЕС КОНТРАКТА!
+const contractAddress = '0x70aCEc10310047F2aD48e75218337BC46b90db53'; // ← ЗАМЕНИТЕ ЭТО!
 
-// ABI контракта
 const contractAbi = [
     {
         "inputs": [
@@ -31,92 +30,42 @@ const contractAbi = [
     }
 ];
 
-let provider, signer, contract;
+if (window.ethereum) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    let signer;
+    let contract;
 
-// Функция подключения кошелька
-async function connectWallet() {
-    if (typeof window.ethereum === 'undefined') {
-        alert('Установите MetaMask!');
-        return false;
-    }
-
-    try {
-        // Запрашиваем подключение аккаунтов
+    async function connectWallet() {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
-        
-        // Создаем провайдер и подписанта
-        provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = provider.getSigner();
-        
-        // Получаем адрес для проверки
-        const address = await signer.getAddress();
-        console.log('Подключен аккаунт:', address);
-        
-        // Создаем экземпляр контракта
         contract = new ethers.Contract(contractAddress, contractAbi, signer);
-        
-        alert('Кошелёк подключен: ' + address.substring(0, 8) + '...');
-        return true;
-        
-    } catch (error) {
-        console.error('Ошибка подключения:', error);
-        alert('Ошибка подключения: ' + error.message);
-        return false;
-    }
-}
-
-// Функция установки сообщения
-async function setMessage() {
-    if (!contract) {
-        const connected = await connectWallet();
-        if (!connected) return;
+        console.log('Кошелёк подключен!');
     }
 
-    try {
-        const messageInput = document.getElementById('messageInput');
-        const message = messageInput.value;
-        
-        if (!message) {
-            alert('Введите сообщение!');
-            return;
+    connectWallet();
+
+    document.getElementById('setMessageButton').onclick = async () => {
+        const message = document.getElementById('messageInput').value;
+        try {
+            const tx = await contract.setMessage(message);
+            alert('Транзакция отправлена! Ждите подтверждения...');
+            await tx.wait();
+            alert('Сообщение установлено!');
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка: ' + error.message);
         }
-        
-        console.log('Устанавливаем сообщение:', message);
-        const tx = await contract.setMessage(message);
-        alert('Транзакция отправлена! Ждите подтверждения... Хэш: ' + tx.hash);
-        
-        // Ждем подтверждения
-        await tx.wait();
-        alert('Сообщение успешно установлено в контракт!');
-        
-    } catch (error) {
-        console.error('Ошибка установки сообщения:', error);
-        alert('Ошибка: ' + error.message);
-    }
+    };
+
+    document.getElementById('getMessageButton').onclick = async () => {
+        try {
+            const message = await contract.getMessage();
+            document.getElementById('messageDisplay').innerText = message;
+        } catch (error) {
+            console.error('Ошибка:', error);
+            alert('Ошибка получения сообщения');
+        }
+    };
+} else {
+    alert('Установите MetaMask!');
 }
-
-// Функция получения сообщения
-async function getMessage() {
-    if (!contract) {
-        const connected = await connectWallet();
-        if (!connected) return;
-    }
-
-    try {
-        console.log('Получаем сообщение...');
-        const message = await contract.getMessage();
-        document.getElementById('messageDisplay').innerText = message;
-        console.log('Получено сообщение:', message);
-    } catch (error) {
-        console.error('Ошибка получения сообщения:', error);
-        alert('Ошибка получения: ' + error.message);
-    }
-}
-
-// Назначаем обработчики после загрузки страницы
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('setMessageButton').onclick = setMessage;
-    document.getElementById('getMessageButton').onclick = getMessage;
-    
-    console.log('Приложение загружено. Готово к подключению кошелька.');
-});
